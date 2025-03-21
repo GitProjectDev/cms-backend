@@ -1,0 +1,33 @@
+<%- include('partials/header', { title: 'Dashboard' }) %>
+<main class="container">
+    <div class="dashboard-content">
+        <h2>Welcome, <%= user.name %>!</h2>
+        <% if (success) { %>
+            <div class="alert alert-success"><%= success %></div>
+        <% } %>
+        <% if (error) { %>
+            <div class="alert alert-error"><%= error %></div>
+        <% } %>
+        <p class="subtitle">Manage your content:</p>
+        <div class="dashboard-links">
+            <a href="/videos" class="dashboard-link">
+                <i class="fas fa-video" aria-hidden="true"></i>
+                <span>Videos</span>
+            </a>
+            <a href="/blogs" class="dashboard-link">
+                <i class="fas fa-blog" aria-hidden="true"></i>
+                <span>Blogs</span>
+            </a>
+            <a href="/articles" class="dashboard-link">
+                <i class="fas fa-newspaper" aria-hidden="true"></i>
+                <span>Articles</span>
+            </a>
+            <a href="/auth/change-password" class="dashboard-link">
+                <i class="fas fa-lock" aria-hidden="true"></i>
+                <span>Change Password</span>
+            </a>
+        </div>
+        <a href="/auth/logout" class="logout-btn">Logout</a>
+    </div>
+</main>
+<%- include('partials/footer') %>
