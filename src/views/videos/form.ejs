@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Video Form</title>
+</head>
+<body>
+  <h2><%= buttonText %> Video</h2>
+  <a href="/videos">Back to Videos</a>
+  <form action="<%= action %>" method="POST">
+    <label>Title:</label>
+    <input type="text" name="title" value="<%= video.title || '' %>" required/>
+    <br>
+    <label>URL:</label>
+    <input type="url" name="url" value="<%= video.url || '' %>" required/>
+    <br>
+    <label>Description:</label>
+    <textarea name="description" rows="3" cols="30"><%= video.description || '' %></textarea>
+    <br>
+    <button type="submit"><%= buttonText %></button>
+  </form>
+</body>
+</html>

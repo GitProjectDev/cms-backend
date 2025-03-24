@@ -1,0 +1,28 @@
+<%- include('../partials/header', { title: 'Article Management' }) %>
+
+<div class="container">
+  <h2>Articles</h2>
+  <a href="/dashboard" class="btn">Back to Dashboard</a> |
+  <a href="/articles/new" class="btn btn-primary">Create New Article</a>
+  <hr>
+  <% if (!articles || articles.length === 0) { %>
+    <p>No articles found.</p>
+  <% } else { %>
+    <ul>
+      <% articles.forEach(article => { %>
+        <li>
+          <strong>
+            <a href="/articles/<%= article._id %>"><%= article.title %></a>
+          </strong> - 
+          <small><%= article.createdAt ? new Date(article.createdAt).toLocaleDateString() : 'Unknown Date' %></small>
+          <a href="/articles/edit/<%= article._id %>" class="btn btn-sm btn-warning">Edit</a>
+          <form action="/articles/delete/<%= article._id %>" method="POST" style="display:inline;">
+            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+          </form>
+        </li>
+      <% }); %>
+    </ul>
+  <% } %>
+</div>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Gallery Management</title>
+</head>
+<body>
+  <h2>Gallery</h2>
+  <a href="/dashboard">Back to Dashboard</a> |
+  <a href="/galleries/new">Add New Image</a>
+  <hr>
+  <% if(galleries.length === 0){ %>
+    <p>No images found.</p>
+  <% } else { %>
+    <ul>
+      <% galleries.forEach(function(gallery){ %>
+        <li>
+          <strong><%= gallery.title %></strong> - <small><%= gallery.createdAt.toDateString() %></small>
+          <a href="/galleries/edit/<%= gallery._id %>">Edit</a>
+          <a href="/galleries/delete/<%= gallery._id %>">Delete</a>
+        </li>
+      <% }); %>
+    </ul>
+  <% } %>
+</body>
+</html>

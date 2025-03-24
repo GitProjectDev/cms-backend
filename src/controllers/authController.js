@@ -1,5 +1,6 @@
-const User = require('../models/user');
+const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const User = require('../models/User');
 
 const registerUser = async (req, res) => {
     try {
@@ -9,7 +10,7 @@ const registerUser = async (req, res) => {
         const existingUser = await User.findOne({ email });
         if (existingUser) {
             req.flash('error', 'User already exists');
-            return res.redirect('/auth/login');
+            return res.redirect('/auth/register');
         }
 
         // Hash the password

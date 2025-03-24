@@ -1,0 +1,23 @@
+<%- include('../partials/header', { title: 'Article Details' }) %>
+
+<div class="container">
+  <h2><%= article.title %></h2>
+  <p><small>Created on: <%= article.createdAt ? new Date(article.createdAt).toLocaleDateString() : 'Unknown Date' %></small></p>
+
+  <% if (article.url) { %>
+    <p><strong>Video URL:</strong>
+    <a href="<%= article.url %>" target="_blank"><%= article.url %></a></p>
+  <% } %>
+
+  <% if (article.content) { %>
+    <p><strong>Content:</strong> <%= article.content %></p>
+  <% } %>
+
+  <% if (article.author) { %>
+    <p><strong>Author:</strong> <%= article.author %></p>
+  <% } %>
+
+  <a href="javascript:history.back()" class="btn btn-secondary">Go Back</a>
+</div>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Gallery Form</title>
+</head>
+<body>
+  <h2><%= buttonText %> Gallery Image</h2>
+  <a href="/galleries">Back to Gallery</a>
+  <form action="<%= action %>" method="POST">
+    <label>Title:</label>
+    <input type="text" name="title" value="<%= gallery.title || '' %>" required/>
+    <br>
+    <label>Image URL:</label>
+    <input type="url" name="imageUrl" value="<%= gallery.imageUrl || '' %>" required/>
+    <br>
+    <label>Description:</label>
+    <textarea name="description" rows="3" cols="30"><%= gallery.description || '' %></textarea>
+    <br>
+    <button type="submit"><%= buttonText %></button>
+  </form>
+</body>
+</html>

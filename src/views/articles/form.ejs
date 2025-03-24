@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Article Form</title>
+</head>
+<body>
+  <h2><%= buttonText %> Article</h2>
+  <a href="/articles">Back to Articles</a>
+  <form action="<%= action %>" method="POST">
+    <label>Title:</label>
+    <input type="text" name="title" value="<%= article.title || '' %>" required/>
+    <br>
+    <label>Author:</label>
+    <input type="text" name="author" value="<%= article.author || '' %>" required/>
+    <br>
+    <label>Content:</label>
+    <textarea name="content" rows="5" cols="30"><%= article.content || '' %></textarea>
+    <br>
+    <button type="submit"><%= buttonText %></button>
+  </form>
+</body>
+</html>

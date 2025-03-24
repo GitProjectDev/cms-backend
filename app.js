@@ -1,16 +1,17 @@
+require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
 const methodOverride = require('method-override');
 const flash = require('connect-flash');
+const path = require('path');
 const connectDb = require('./src/config/connectDb');
+
+// Import Routes
 const authRoutes = require('./src/routes/auth');
-// const articleRoutes = require('./src/routes/articles');
-// const publicArticleRoutes = require('./src/routes/publicArticleRoutes');
-// const adminVideoRoutes = require('./src/routes/videos');
-// const publicVideoRoutes = require('./src/routes/publicVideoRoutes');
-// const adminBlogRoutes = require('./src/routes/blogs');
-// const publicBlogRoutes = require('./src/routes/publicBlogRoutes');
-require('dotenv').config();
+const blogRoutes = require('./src/routes/blog');
+const videoRoutes = require('./src/routes/video');
+const articleRoutes = require('./src/routes/article');
+const galleryRoutes = require('./src/routes/gallery');
 
 const app = express();
 
@@ -22,43 +23,43 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(methodOverride('_method'));
 app.set('view engine', 'ejs');
-app.set('views', 'src/views');
-app.use(express.static('src/public'));
+app.set('views', path.join(__dirname, 'src', 'views'));
+app.use(express.static(path.join(__dirname, 'src', 'public')));
 
-const sessionSecret = process.env.SESSION_SECRET || 'your-secret-key';
+// Session configuration
 app.use(session({
-    secret: sessionSecret,
-    resave: false,
-    saveUninitialized: false,
-    cookie: { secure: process.env.NODE_ENV === 'production' }
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  cookie: { secure: process.env.NODE_ENV === 'production' }
 }));
 
+// Flash messages
 app.use(flash());
+
+// Pass flash messages and user data to all views
 app.use((req, res, next) => {
-    res.locals.success = req.flash('success');
-    res.locals.error = req.flash('error');
-    res.locals.user = req.session.user || null;
-    next();
+  res.locals.success = req.flash('success');
+  res.locals.error = req.flash('error');
+  res.locals.user = req.session.user || null;
+  next();
 });
 
 // Routes
 app.use('/auth', authRoutes);
-// app.use('/articles', articleRoutes);
-// app.use('/public/articles', publicArticleRoutes);
-// app.use('/videos', adminVideoRoutes);
-// app.use('/api/videos', publicVideoRoutes);
-// app.use('/blogs', adminBlogRoutes);
-// app.use('/api/blogs', publicBlogRoutes);
+app.use('/blogs', blogRoutes);
+app.use('/videos', videoRoutes);
+app.use('/articles', articleRoutes);
+app.use('/galleries', galleryRoutes);
 
-// Dashboard route 
+// Dashboard route
 app.get('/dashboard', (req, res) => {
-    if (!req.session.user) {
-        req.flash('error', 'Please log in first');
-        return res.redirect('/auth/login');
-    }
-    res.render('dashboard');
+  if (!req.session.user) {
+    req.flash('error', 'Please log in first');
+    return res.redirect('/auth/login');
+  }
+  res.render('dashboard');
 });
 
-// Start Server
-const PORT = process.env.PORT ;
-app.listen(PORT, () => console.log(`Server is listening on http://localhost:${PORT} ...`));
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server is running on http://localhost:${PORT}`));
