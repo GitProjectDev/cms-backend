@@ -25,6 +25,7 @@ app.use(methodOverride('_method'));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'src', 'views'));
 app.use(express.static(path.join(__dirname, 'src', 'public')));
+app.use(express.static(path.join(__dirname,'src', 'uploads')));
 
 // Session configuration
 app.use(session({
@@ -58,7 +59,7 @@ app.get('/dashboard', (req, res) => {
     req.flash('error', 'Please log in first');
     return res.redirect('/auth/login');
   }
-  res.render('dashboard');
+  res.render('dashboard', { user: req.session.user });
 });
 
 const PORT = process.env.PORT || 3000;

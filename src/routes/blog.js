@@ -1,18 +1,23 @@
 const express = require("express");
 const router = express.Router();
-const { getAllBlogs, getSingleBlog, createBlog, editBlog, updateBlog, deleteBlog, apiAllBlogs, apiSingleBlog } = require("../controllers/blogController"); 
+const upload = require("../middleware/upload");
+const {
+  getAllBlogs,
+  getSingleBlog,
+  newBlogForm,
+  createBlog,
+  editBlog,
+  updateBlog,
+  deleteBlog
+} = require("../controllers/blogController");
 
-// Admin routes
-router.get("/blogs", getAllBlogs); 
-router.get("/blogs/new", (req, res) => res.render("blogs/new")); 
-router.post("/blogs", createBlog); 
-router.get("/blogs/edit/:id", editBlog); 
-router.post("/blogs/update/:id", updateBlog); 
-router.post("/blogs/delete/:id", deleteBlog); 
-router.get("/blogs/:id", getSingleBlog); 
-
-//public 
-router.get('/api/blogs',apiAllBlogs);
-router.get('/api/blogs/:id',apiSingleBlog);
+// Blog routes
+router.get("/", getAllBlogs);
+router.get("/new", newBlogForm);
+router.post("/", upload.single("image"), createBlog);
+router.get("/edit/:id", editBlog);
+router.post("/update/:id", upload.single("image"), updateBlog);
+router.post("/delete/:id", deleteBlog);
+router.get("/:id", getSingleBlog);
 
 module.exports = router;

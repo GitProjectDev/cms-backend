@@ -6,12 +6,12 @@
 <body>
   <h2><%= buttonText %> Gallery Image</h2>
   <a href="/galleries">Back to Gallery</a>
-  <form action="<%= action %>" method="POST">
+  <form action="<%= action %>" method="POST" enctype="multipart/form-data">
     <label>Title:</label>
     <input type="text" name="title" value="<%= gallery.title || '' %>" required/>
     <br>
-    <label>Image URL:</label>
-    <input type="url" name="imageUrl" value="<%= gallery.imageUrl || '' %>" required/>
+    <label>Upload Image:</label>
+    <input type="file" name="imageUrl" required/>
     <br>
     <label>Description:</label>
     <textarea name="description" rows="3" cols="30"><%= gallery.description || '' %></textarea>
