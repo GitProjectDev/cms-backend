@@ -4,15 +4,15 @@ const path = require('path');
 // Configure multer storage
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'src/uploads/'); // Destination folder latter be the cloud storage 
+        cb(null, 'src/uploads/'); // Destination folder for uploads
     },
     filename: (req, file, cb) => {
         const suffix = Date.now();
-        cb(null, `${suffix}-${file.originalname}`); // Unique filename {date-originalFilename}
-    }
+        cb(null, `${suffix}-${file.originalname}`); // Unique file naming
+    },
 });
 
-// File type validation
+// File filter for security (only allow images)
 const fileFilter = (req, file, cb) => {
     const allowedFileTypes = /jpeg|jpg|png/;
     const mimeType = allowedFileTypes.test(file.mimetype);
@@ -25,11 +25,13 @@ const fileFilter = (req, file, cb) => {
     }
 };
 
-// Upload middleware
+// Multer upload middleware
 const upload = multer({
     storage,
-    limits: { fileSize: 5 * 1024 * 1024 }, // Limit 5MB size 
-    fileFilter
+    limits: {
+        fileSize: 5 * 1024 * 1024, // Limit file size to 5 MB
+    },
+    fileFilter,
 });
 
 module.exports = upload;

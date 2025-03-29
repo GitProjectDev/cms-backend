@@ -13,6 +13,10 @@
     <label>Author:</label>
     <input type="text" name="author" value="<%= article.author || '' %>" required/>
     <br>
+    <br>
+    <label>Url:</label>
+    <input type="url" name="url" value="<%= article.url || '' %>" required/>
+    <br>
     <label>Content:</label>
     <textarea name="content" rows="5" cols="30"><%= article.content || '' %></textarea>
     <br>

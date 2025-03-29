@@ -2,19 +2,14 @@
 
 <div class="container">
   <h2><%= blog.title %></h2>
-  <p>
-    <small>
-      Created by <%= blog.author.name || blog.author.username %> on 
-      <%= new Date(blog.createdAt).toLocaleDateString() %>
-    </small>
-  </p>
-
+  <p><small>Created by <%= blog.author.User %> on <%= new Date(blog.createdAt).toLocaleDateString() %></small></p>
+  
   <% if (blog.image) { %>
-    <img src="/uploads/<%= blog.image.split('/')[1] %>" alt="Blog Image" width="200">
+    <img src="/uploads/<%= blog.image %>" alt="Blog Image" width="200">
   <% } %>
-
-  <div><%- blog.description %></div>
-
+  
+  <div><%- blog.description %></div> <!-- Renders Quill-generated HTML -->
+  
   <a href="/blogs/<%= blog._id %>/edit" class="btn btn-warning">Edit</a>
   <form action="/blogs/<%= blog._id %>?_method=DELETE" method="POST" style="display:inline;">
     <button type="submit" class="btn btn-danger">Delete</button>

@@ -1,122 +1,146 @@
-const Blog = require("../models/blog");
-const sanitizeHtml = require("sanitize-html");
-const path = require("path");
+const Blog = require('../models/blog');
+const fs = require('fs');
+const path = require('path');
 
-// Display all blogs
-const getAllBlogs = async (req, res) => {
-    try {
-        const blogs = await Blog.find().populate("author", "name").sort({ createdAt: -1 }).lean();
-        res.render("blogs/index", { title: "All Blogs", blogs, success: req.flash("success"), error: req.flash("error") });
-    } catch (error) {
-        console.error("Error retrieving blogs:", error);
-        req.flash("error", "Error retrieving blogs");
-        res.render("blogs/index", { title: "All Blogs", blogs: [], success: [], error: [] });
+const uploadDir = path.join(__dirname, '..', 'uploads');
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+// Create Blog
+exports.createBlog = async (req, res) => {
+  try {
+    // console.log("Session user:", req.session.user);
+    //  user is logged in or not 
+    if (!req.session.user) {
+      req.flash('error', 'Please log in to create a blog.');
+      return res.redirect('/auth/login');
     }
-};
 
-// Display a single blog post
-const getSingleBlog = async (req, res) => {
-    try {
-        const blog = await Blog.findById(req.params.id).populate("author", "name").lean();
-        if (!blog) {
-            req.flash("error", "Blog not found");
-            return res.redirect("/blogs");
-        }
-        res.render("blogs/view", { title: blog.title, blog, success: req.flash("success"), error: req.flash("error") });
-    } catch (error) {
-        console.error(error);
-        req.flash("error", "Error retrieving blog");
-        res.redirect("/blogs");
+    const { title, description } = req.body;
+    const image = req.file ? `uploads/${req.file.filename}` : '';
+    const author = req.session.user.id;
+
+    await Blog.create({ title, description, image, author });
+    req.flash('success', 'Blog created successfully');
+    res.redirect('/blogs');
+  } catch (error) {
+    console.error(error);
+    if (req.file) {
+      fs.unlinkSync(path.join(uploadDir, req.file.filename));
     }
+    req.flash('error', 'Failed to create blog');
+    res.redirect('/blogs/new');
+  }
 };
 
-// Show the form to create a new blog
-const newBlogForm = (req, res) => {
-    res.render("blogs/form", { title: "Create New Blog", success: req.flash("success"), error: req.flash("error") });
+// Show all blogs
+exports.getBlogs = async (req, res) => {
+  try {
+    const blogs = await Blog.find().populate('author');
+    res.render('blog/index', { blogs });
+  } catch (error) {
+    console.error(error);
+    req.flash('error', 'Error fetching blogs');
+    res.redirect('/dashboard');
+  }
 };
 
-// Create a new blog
-const createBlog = async (req, res) => {
-    try {
-        console.log("Request Body:", req.body); // Debugging
-        console.log("Uploaded File:", req.file); // Debugging
-
-        const { title, description, author } = req.body;
-        if (!author) {
-            req.flash("error", "Author is required!");
-            return res.redirect("/blogs/new");
-        }
-
-        const image = req.file ?`/src/uploads/${req.file.filename}` : '';
-        const sanitizedDescription = sanitizeHtml(description, {
-            allowedTags: sanitizeHtml.defaults.allowedTags.concat([
-                "img", "p", "h1", "h2", "h3", "strong", "em", "ul", "ol", "li", "a"
-            ]),
-            allowedAttributes: { img: ["src", "alt"], a: ["href", "target"] }
-        });
-
-        const newBlog = new Blog({ title, description: sanitizedDescription, image, author });
-        await newBlog.save();
-
-        req.flash("success", "Blog created successfully!");
-        res.redirect("/blogs");
-    } catch (error) {
-        console.error(error);
-        req.flash("error", "Error creating blog");
-        res.redirect("/blogs/new");
+// Show single blog
+exports.getBlogById = async (req, res) => {
+  try {
+    const blog = await Blog.findById(req.params.id).populate('author');
+    if (!blog) {
+      req.flash('error', 'Blog not found');
+      return res.redirect('/blogs');
     }
+    res.render('blog/view', { blog }); 
+  } catch (error) {
+    console.error(error);
+    req.flash('error', 'Error fetching blog');
+    res.redirect('/blogs');
+  }
 };
 
 
-// Show the form to edit a blog
-const editBlog = async (req, res) => {
-    try {
-        const blog = await Blog.findById(req.params.id).lean();
-        if (!blog) {
-            req.flash("error", "Blog not found");
-            return res.redirect("/blogs");
-        }
-        res.render("blogs/edit", { title: "Edit Blog", blog, success: req.flash("success"), error: req.flash("error") });
-    } catch (error) {
-        console.error(error);
-        req.flash("error", "Error retrieving blog for edit");
-        res.redirect("/blogs");
+// Render edit form
+exports.getEditBlogForm = async (req, res) => {
+  try {
+    const blog = await Blog.findById(req.params.id).populate('author');
+    if (!blog) {
+      req.flash('error', 'Blog not found');
+      return res.redirect('/blogs');
     }
+    res.render('blog/form', { blog, editMode: true });
+  } catch (error) {
+    console.error(error);
+    req.flash('error', 'Error fetching blog for edit');
+    res.redirect('/blogs');
+  }
 };
 
-// Update an existing blog
-const updateBlog = async (req, res) => {
-    try {
-        const { title, description, author } = req.body;
-        const image = req.file ? req.file.filename : req.body.existingImage;
-
-        const sanitizedDescription = sanitizeHtml(description, {
-            allowedTags: sanitizeHtml.defaults.allowedTags.concat(["img", "p", "h1", "h2", "h3", "strong", "em", "ul", "ol", "li", "a"]),
-            allowedAttributes: { img: ["src", "alt"], a: ["href", "target"] }
-        });
-
-        await Blog.findByIdAndUpdate(req.params.id, { title, description: sanitizedDescription, image, author });
-
-        req.flash("success", "Blog updated successfully!");
-        res.redirect("/blogs");
-    } catch (error) {
-        console.error(error);
-        req.flash("error", "Error updating blog");
-        res.redirect("/blogs");
+// Update Blog
+exports.updateBlog = async (req, res) => {
+  try {
+    const { title, description } = req.body;
+    const blog = await Blog.findById(req.params.id);
+    if (!blog) {
+      req.flash('error', 'Blog not found');
+      return res.redirect('/blogs');
     }
-};
-
-// Delete a blog
-const deleteBlog = async (req, res) => {
-    try {
-        await Blog.findByIdAndDelete(req.params.id);
-        req.flash("success", "Blog deleted successfully!");
-        res.redirect("/blogs");
-    } catch (error) {
-        console.error(error);
-        req.flash("error", "Error deleting blog");
-        res.redirect("/blogs");
+    
+    if (req.file) {
+      if (blog.image) {
+        fs.unlinkSync(path.join(__dirname, '..', blog.image));
+      }
+      blog.image = `uploads/${req.file.filename}`;
     }
+    
+    blog.title = title;
+    blog.description = description;
+    await blog.save();
+    
+    req.flash('success', 'Blog updated successfully');
+    res.redirect(`/blogs/${req.params.id}`);
+  } catch (error) {
+    console.error(error);
+    if (req.file) {
+      fs.unlinkSync(path.join(uploadDir, req.file.filename));
+    }
+    req.flash('error', 'Failed to update blog');
+    res.redirect(`/blogs/${req.params.id}/edit`);
+  }
 };
 
-module.exports = { getAllBlogs, getSingleBlog, newBlogForm, createBlog, editBlog, updateBlog, deleteBlog };
+// Delete Blog
+exports.deleteBlog = async (req, res) => {
+  try {
+    const blog = await Blog.findById(req.params.id);
+    if (!blog) {
+      req.flash('error', 'Blog not found');
+      return res.redirect('/blogs');
+    }
+    if (blog.image && typeof blog.image === 'string') {
+      const imagePath = path.join(__dirname, '..', blog.image);
+      // Check if file exists before trying to delete
+      if (fs.existsSync(imagePath)) {
+        fs.unlinkSync(imagePath);
+      } else {
+        console.warn('Image file not found:', imagePath);
+      }
+    }
+    await Blog.findByIdAndDelete(req.params.id);
+    req.flash('success', 'Blog deleted successfully');
+    res.redirect('/blogs');
+  } catch (error) {
+    console.error(error);
+    req.flash('error', 'Failed to delete blog');
+    res.redirect('/blogs');
+  }
+};
+
+
+// Render create form
+exports.getNewBlogForm = (req, res) => {
+  res.render('blog/form', { blog: null, editMode: false });
+};
