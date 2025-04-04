@@ -1,26 +1,48 @@
+<!-- videos.ejs -->
 <%- include('../partials/header', { title: 'Video Management' }) %>
 
 <div class="container">
   <h2>Videos</h2>
-  <a href="/dashboard" class="btn">Back to Dashboard</a> |
-  <a href="/videos/new" class="btn btn-primary">Create New Video</a>
-  <hr>
+  <div class="action-bar">
+    <a href="/dashboard" class="btn btn-back">
+      <i class="fas fa-arrow-left"></i> Dashboard
+    </a>
+    <a href="/videos/new" class="btn btn-primary">
+      <i class="fas fa-plus"></i> New Video
+    </a>
+  </div>
+
   <% if (!videos || videos.length === 0) { %>
-    <p>No videos found.</p>
+    <div class="empty-state">
+      <i class="fas fa-video"></i>
+      <p>No videos found</p>
+    </div>
   <% } else { %>
-    <ul>
+    <div class="card-container">
       <% videos.forEach(video => { %>
-        <li>
-          <strong>
-            <a href="/videos/<%= video._id %>"><%= video.title %></a>
-          </strong> - <small><%= new Date(video.createdAt).toLocaleDateString() %></small>
-          <a href="/videos/edit/<%= video._id %>" class="btn btn-sm btn-warning">Edit</a>
-          <form action="/videos/delete/<%= video._id %>" method="POST" style="display:inline;">
-            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-          </form>
-        </li>
+        <div class="card">
+          <div class="card-content">
+            <h3>
+              <a href="/videos/<%= video._id %>"><%= video.title %></a>
+              <span class="text-muted">
+                <%= new Date(video.createdAt).toLocaleDateString() %>
+              </span>
+            </h3>
+          </div>
+          <div class="card-actions">
+            <a href="/videos/edit/<%= video._id %>" class="btn btn-icon btn-edit">
+              <i class="fas fa-edit"></i>
+            </a>
+            <form action="/videos/delete/<%= video._id %>" method="POST" class="delete-form">
+              <button type="submit" class="btn btn-icon btn-danger" 
+                      onclick="return confirm('Delete this video permanently?')">
+                <i class="fas fa-trash"></i>
+              </button>
+            </form>
+          </div>
+        </div>
       <% }); %>
-    </ul>
+    </div>
   <% } %>
 </div>
 

@@ -1,18 +1,14 @@
-<%- include('../partials/header', { title: 'Gallery Image Details' }) %>
 
+<%- include('../partials/header', { title: 'Gallery Details' }) %>
 <div class="container">
   <h2><%= gallery.title %></h2>
   <p><small>Created on: <%= new Date(gallery.createdAt).toLocaleDateString() %></small></p>
-  
-  <div>
-    <img src="<%= gallery.imageUrl %>" alt="<%= gallery.title %>" style="max-width: 100%; height: auto;">
-  </div>
-
   <% if (gallery.description) { %>
     <p><strong>Description:</strong> <%= gallery.description %></p>
   <% } %>
-
-  <a href="javascript:history.back()" class="btn">Go Back</a>
+  <div class="image-preview">
+    <img src="<%= gallery.imageUrl %>" alt="<%= gallery.title %>" class="img-fluid">
+  </div>
+  <a href="/galleries" class="btn btn-secondary">Back to Gallery</a>
 </div>
-
 <%- include('../partials/footer') %>

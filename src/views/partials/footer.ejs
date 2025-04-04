@@ -2,5 +2,19 @@
 <footer>
   <p>© <%= new Date().getFullYear() %> CMS. All rights reserved.</p>
 </footer>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const navToggle = document.querySelector('.nav-toggle');
+    const navMenu = document.querySelector('nav ul');
+
+    if (navToggle && navMenu) {
+      navToggle.addEventListener('click', function() {
+        navMenu.classList.toggle('show');
+      });
+    } else {
+      console.error('Navigation toggle or menu not found');
+    }
+  });
+</script>
 </body>
 </html>

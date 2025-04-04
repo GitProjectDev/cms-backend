@@ -10,15 +10,13 @@ if (!fs.existsSync(uploadDir)) {
 // Create Blog
 exports.createBlog = async (req, res) => {
   try {
-    // console.log("Session user:", req.session.user);
-    //  user is logged in or not 
     if (!req.session.user) {
       req.flash('error', 'Please log in to create a blog.');
       return res.redirect('/auth/login');
     }
 
     const { title, description } = req.body;
-    const image = req.file ? `uploads/${req.file.filename}` : '';
+    const image = req.file ? `/uploads/${req.file.filename}` : '';
     const author = req.session.user.id;
 
     await Blog.create({ title, description, image, author });
@@ -27,12 +25,13 @@ exports.createBlog = async (req, res) => {
   } catch (error) {
     console.error(error);
     if (req.file) {
-      fs.unlinkSync(path.join(uploadDir, req.file.filename));
+      await fs.unlink(path.join(uploadDir, req.file.filename));
     }
     req.flash('error', 'Failed to create blog');
     res.redirect('/blogs/new');
   }
 };
+
 
 // Show all blogs
 exports.getBlogs = async (req, res) => {
@@ -84,6 +83,7 @@ exports.updateBlog = async (req, res) => {
   try {
     const { title, description } = req.body;
     const blog = await Blog.findById(req.params.id);
+    
     if (!blog) {
       req.flash('error', 'Blog not found');
       return res.redirect('/blogs');
@@ -91,9 +91,13 @@ exports.updateBlog = async (req, res) => {
     
     if (req.file) {
       if (blog.image) {
-        fs.unlinkSync(path.join(__dirname, '..', blog.image));
+        try {
+          await fs.unlink(path.join(__dirname, '..', 'public', blog.image));
+        } catch (err) {
+          console.error('Error deleting old image:', err);
+        }
       }
-      blog.image = `uploads/${req.file.filename}`;
+      blog.image = `/uploads/${req.file.filename}`;
     }
     
     blog.title = title;
@@ -105,7 +109,7 @@ exports.updateBlog = async (req, res) => {
   } catch (error) {
     console.error(error);
     if (req.file) {
-      fs.unlinkSync(path.join(uploadDir, req.file.filename));
+      await fs.unlink(path.join(uploadDir, req.file.filename));
     }
     req.flash('error', 'Failed to update blog');
     res.redirect(`/blogs/${req.params.id}/edit`);
@@ -115,21 +119,20 @@ exports.updateBlog = async (req, res) => {
 // Delete Blog
 exports.deleteBlog = async (req, res) => {
   try {
-    const blog = await Blog.findById(req.params.id);
+    const blog = await Blog.findByIdAndDelete(req.params.id);
     if (!blog) {
       req.flash('error', 'Blog not found');
       return res.redirect('/blogs');
     }
-    if (blog.image && typeof blog.image === 'string') {
-      const imagePath = path.join(__dirname, '..', blog.image);
-      // Check if file exists before trying to delete
-      if (fs.existsSync(imagePath)) {
-        fs.unlinkSync(imagePath);
-      } else {
-        console.warn('Image file not found:', imagePath);
+    
+    if (blog.image) {
+      try {
+        await fs.unlink(path.join(__dirname, '..', 'public', blog.image));
+      } catch (err) {
+        console.warn('Error deleting image:', err.message);
       }
     }
-    await Blog.findByIdAndDelete(req.params.id);
+    
     req.flash('success', 'Blog deleted successfully');
     res.redirect('/blogs');
   } catch (error) {

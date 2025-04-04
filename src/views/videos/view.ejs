@@ -1,19 +1,14 @@
 <%- include('../partials/header', { title: 'Video Details' }) %>
-
 <div class="container">
   <h2><%= video.title %></h2>
   <p><small>Created on: <%= new Date(video.createdAt).toLocaleDateString() %></small></p>
-
   <p>
     <strong>Video URL:</strong>
     <a href="<%= video.url %>" target="_blank"><%= video.url %></a>
   </p>
-
   <% if (video.description) { %>
     <p><strong>Description:</strong> <%= video.description %></p>
   <% } %>
-
-  <a href="javascript:history.back()" class="btn btn-secondary">Go Back</a>
+  <a href="/videos" class="btn btn-secondary">Back to Videos</a>
 </div>
-
 <%- include('../partials/footer') %>

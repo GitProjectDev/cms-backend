@@ -2,25 +2,46 @@
 
 <div class="container">
   <h2>Blogs</h2>
-  <a href="/dashboard" class="btn">Back to Dashboard</a> |
-  <a href="/blogs/new" class="btn btn-primary">Create New Blog</a>
-  <hr>
+  <div class="action-bar">
+    <a href="/dashboard" class="btn btn-back">
+      <i class="fas fa-arrow-left"></i> Dashboard
+    </a>
+    <a href="/blogs/new" class="btn btn-primary">
+      <i class="fas fa-plus"></i> New Blog
+    </a>
+  </div>
+
   <% if (!blogs || blogs.length === 0) { %>
-    <p>No blogs found.</p>
+    <div class="empty-state">
+      <i class="fas fa-file-alt"></i>
+      <p>No blogs found</p>
+    </div>
   <% } else { %>
-    <ul>
+    <div class="card-container">
       <% blogs.forEach(blog => { %>
-        <li>
-          <strong>
-            <a href="/blogs/<%= blog._id %>"><%= blog.title %></a>
-          </strong> - <small><%= new Date(blog.createdAt).toLocaleDateString() %></small>
-          <a href="/blogs/<%= blog._id %>/edit" class="btn btn-sm btn-warning">Edit</a>
-          <form action="/blogs/<%= blog._id %>?_method=DELETE" method="POST" style="display:inline;">
-            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-          </form>
-        </li>
+        <div class="card">
+          <div class="card-content">
+            <h3>
+              <a href="/blogs/<%= blog._id %>"><%= blog.title %></a>
+              <span class="text-muted">
+                <%= new Date(blog.createdAt).toLocaleDateString() %>
+              </span>
+            </h3>
+          </div>
+          <div class="card-actions">
+            <a href="/blogs/edit/<%= blog._id %>" class="btn btn-icon btn-edit">
+              <i class="fas fa-edit"></i>
+            </a>
+            <form action="/blogs/<%= blog._id %>?_method=DELETE" method="POST" class="delete-form">
+              <button type="submit" class="btn btn-icon btn-danger"
+                      onclick="return confirm('Delete this blog permanently?')">
+                <i class="fas fa-trash"></i>
+              </button>
+            </form>
+          </div>
+        </div>
       <% }); %>
-    </ul>
+    </div>
   <% } %>
 </div>
 

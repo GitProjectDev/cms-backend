@@ -1,13 +1,26 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const menuToggle = document.querySelector('.menu-toggle');
-    const navLinks = document.querySelector('.nav-links');
+// Ensure the DOM is fully loaded before running the script
+document.addEventListener('DOMContentLoaded', function() {
+  const navToggle = document.querySelector('.nav-toggle');
+  const navMenu = document.querySelector('nav ul');
 
-    if (menuToggle && navLinks) {
-        menuToggle.addEventListener('click', () => {
-            navLinks.classList.toggle('active');
-            menuToggle.classList.toggle('active'); // Toggle for button animation
-        });
+  // Check if elements exist to avoid errors
+  if (!navToggle || !navMenu) {
+    console.error('Navigation toggle or menu not found in the DOM');
+    return;
+  }
+
+  // Add click event listener to toggle the menu
+  navToggle.addEventListener('click', function() {
+    navMenu.classList.toggle('show');
+    // Update the icon based on menu state
+    const icon = navToggle.querySelector('i');
+    if (navMenu.classList.contains('show')) {
+      icon.classList.remove('fa-bars');
+      icon.classList.add('fa-times'); // Change to "X" when menu is open
     } else {
-        console.error('Menu toggle or nav links not found in the DOM');
+      icon.classList.remove('fa-times');
+      icon.classList.add('fa-bars'); // Back to hamburger when closed
     }
+    console.log('Menu toggled, show class:', navMenu.classList.contains('show'));
+  });
 });

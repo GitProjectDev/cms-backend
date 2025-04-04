@@ -1,26 +1,25 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Article Form</title>
-</head>
-<body>
+<%- include('../partials/header', { title: 'Article Management' }) %>
+<div class="container">
   <h2><%= buttonText %> Article</h2>
-  <a href="/articles">Back to Articles</a>
+  <a href="/articles" class="btn btn-secondary">Back to Articles</a>
   <form action="<%= action %>" method="POST">
-    <label>Title:</label>
-    <input type="text" name="title" value="<%= article.title || '' %>" required/>
-    <br>
-    <label>Author:</label>
-    <input type="text" name="author" value="<%= article.author || '' %>" required/>
-    <br>
-    <br>
-    <label>Url:</label>
-    <input type="url" name="url" value="<%= article.url || '' %>" required/>
-    <br>
-    <label>Content:</label>
-    <textarea name="content" rows="5" cols="30"><%= article.content || '' %></textarea>
-    <br>
-    <button type="submit"><%= buttonText %></button>
+    <div class="form-group">
+      <label>Title:</label>
+      <input type="text" name="title" value="<%= article.title || '' %>" required/>
+    </div>
+    <div class="form-group">
+      <label>Author:</label>
+      <input type="text" name="author" value="<%= article.author || '' %>" required/>
+    </div>
+    <div class="form-group">
+      <label>URL:</label>
+      <input type="url" name="url" value="<%= article.url || '' %>" required/>
+    </div>
+    <div class="form-group">
+      <label>Content:</label>
+      <textarea name="content" rows="5"><%= article.content || '' %></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary"><%= buttonText %></button>
   </form>
-</body>
-</html>
+</div>
+<%- include('../partials/footer') %>

@@ -1,25 +1,17 @@
-<%- include('../partials/header', { title: blog.title }) %>
-
+<%- include('../partials/header', { title: 'Article Details' }) %>
 <div class="container">
-  <h2><%= blog.title %></h2>
-  <p>
-    <small>
-      Created by <%= blog.author.name || blog.author.username %> on 
-      <%= new Date(blog.createdAt).toLocaleDateString() %>
-    </small>
-  </p>
-
-  <% if (blog.image) { %>
-    <img src="/uploads/<%= blog.image.split('/')[1] %>" alt="Blog Image" width="200">
+  <h2><%= article.title %></h2>
+  <p><small>Created on: <%= new Date(article.createdAt).toLocaleDateString() %></small></p>
+  <% if (article.title) { %>
+    <p><strong>Title:</strong> <%= article.title %></p>
   <% } %>
-
-  <div><%- blog.description %></div>
-
-  <a href="/blogs/<%= blog._id %>/edit" class="btn btn-warning">Edit</a>
-  <form action="/blogs/<%= blog._id %>?_method=DELETE" method="POST" style="display:inline;">
-    <button type="submit" class="btn btn-danger">Delete</button>
-  </form>
-  <a href="/blogs" class="btn btn-secondary">Back to Blogs</a>
+  <p>
+    <strong>Article URL:</strong>
+    <a href="<%= article.url %>" target="_blank"><%= article.url %></a>
+  </p>
+  <% if (article.content) { %>
+    <p><strong>Content:</strong> <%= article.content %></p>
+  <% } %>
+  <a href="/articles" class="btn btn-secondary">Back to Article</a>
 </div>
-
 <%- include('../partials/footer') %>

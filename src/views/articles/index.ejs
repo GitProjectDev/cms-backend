@@ -1,27 +1,48 @@
+<!-- articles.ejs -->
 <%- include('../partials/header', { title: 'Article Management' }) %>
 
 <div class="container">
   <h2>Articles</h2>
-  <a href="/dashboard" class="btn">Back to Dashboard</a> |
-  <a href="/articles/new" class="btn btn-primary">Create New Article</a>
-  <hr>
+  <div class="action-bar">
+    <a href="/dashboard" class="btn btn-back">
+      <i class="fas fa-arrow-left"></i> Dashboard
+    </a>
+    <a href="/articles/new" class="btn btn-primary">
+      <i class="fas fa-plus"></i> New Article
+    </a>
+  </div>
+
   <% if (!articles || articles.length === 0) { %>
-    <p>No articles found.</p>
+    <div class="empty-state">
+      <i class="fas fa-file-alt"></i>
+      <p>No articles found</p>
+    </div>
   <% } else { %>
-    <ul>
+    <div class="card-container">
       <% articles.forEach(article => { %>
-        <li>
-          <strong>
-            <a href="/articles/<%= article._id %>"><%= article.title %></a>
-          </strong> - 
-          <small><%= article.createdAt ? new Date(article.createdAt).toLocaleDateString() : 'Unknown Date' %></small>
-          <a href="/articles/edit/<%= article._id %>" class="btn btn-sm btn-warning">Edit</a>
-          <form action="/articles/delete/<%= article._id %>" method="POST" style="display:inline;">
-            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-          </form>
-        </li>
+        <div class="card">
+          <div class="card-content">
+            <h3>
+              <a href="/articles/<%= article._id %>"><%= article.title %></a>
+              <span class="text-muted">
+                <%= article.createdAt ? new Date(article.createdAt).toLocaleDateString() : 'Unknown Date' %>
+              </span>
+            </h3>
+          </div>
+          <div class="card-actions">
+            <a href="/articles/edit/<%= article._id %>" class="btn btn-icon btn-edit">
+              <i class="fas fa-edit"></i>
+            </a>
+            <form action="/articles/delete/<%= article._id %>" method="POST" class="delete-form">
+              <button type="submit" class="btn btn-icon btn-danger" 
+                      onclick="return confirm('Delete this article permanently?')">
+                <i class="fas fa-trash"></i>
+              </button>
+            </form>
+          </div>
+        </div>
       <% }); %>
-    </ul>
+    </div>
   <% } %>
 </div>
 

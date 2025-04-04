@@ -1,29 +1,55 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Gallery Management</title>
-</head>
-<body>
+<%- include('../partials/header', { title: 'Gallery Management' }) %>
+
+<div class="container">
   <h2>Gallery</h2>
-  <a href="/dashboard">Back to Dashboard</a> |
-  <a href="/galleries/new">Add New Image</a>
-  <hr>
+  <div class="action-bar">
+    <a href="/dashboard" class="btn btn-back">
+      <i class="fas fa-arrow-left"></i> Dashboard
+    </a>
+    <a href="/galleries/new" class="btn btn-primary">
+      <i class="fas fa-plus"></i> Add New Image
+    </a>
+  </div>
+
   <% if (!galleries || galleries.length === 0) { %>
-    <p>No images found.</p>
+    <div class="empty-state">
+      <i class="fas fa-image"></i>
+      <p>No images found</p>
+    </div>
   <% } else { %>
-    <ul>
+    <div class="grid-container">
       <% galleries.forEach(gallery => { %>
-        <li>
-          <strong><%= gallery.title %></strong> - 
-          <small><%= new Date(gallery.createdAt).toLocaleDateString() %></small>
-          <img src="<%= gallery.imageUrl %>" alt="<%= gallery.title %>" width="100">
-          <a href="/galleries/edit/<%= gallery._id %>">Edit</a>
-          <form action="/galleries/delete/<%= gallery._id %>" method="POST" style="display:inline;">
-            <button type="submit">Delete</button>
-          </form>
-        </li>
+        <div class="card">
+          <div class="card-media">
+            <a href="/galleries/view/<%= gallery._id %>" aria-label="View <%= gallery.title %>">
+              <img src="<%= gallery.imageUrl %>" alt="<%= gallery.title %>" class="thumbnail">
+            </a>
+          </div>
+          <div class="card-content">
+            <h4>
+              <a href="/galleries/view/<%= gallery._id %>" class="gallery-title-link">
+                <%= gallery.title %>
+              </a>
+            </h4>
+            <span class="text-muted">
+              <%= new Date(gallery.createdAt).toLocaleDateString() %>
+            </span>
+          </div>
+          <div class="card-actions">
+            <a href="/galleries/edit/<%= gallery._id %>" class="btn btn-icon btn-edit">
+              <i class="fas fa-edit"></i>
+            </a>
+            <form action="/galleries/delete/<%= gallery._id %>" method="POST" class="delete-form">
+              <button type="submit" class="btn btn-icon btn-danger" 
+                      onclick="return confirm('Delete this image permanently?')">
+                <i class="fas fa-trash"></i>
+              </button>
+            </form>
+          </div>
+        </div>
       <% }); %>
-    </ul>
+    </div>
   <% } %>
-</body>
-</html>
+</div>
+
+<%- include('../partials/footer') %>

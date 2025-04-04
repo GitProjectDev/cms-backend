@@ -1,22 +1,21 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Gallery Form</title>
-</head>
-<body>
+<%- include('../partials/header', { title: 'Gallery Management' }) %>
+<div class="container">
   <h2><%= buttonText %> Gallery Image</h2>
-  <a href="/galleries">Back to Gallery</a>
+  <a href="/galleries" class="btn btn-secondary">Back to Gallery</a>
   <form action="<%= action %>" method="POST" enctype="multipart/form-data">
-    <label>Title:</label>
-    <input type="text" name="title" value="<%= gallery.title || '' %>" required/>
-    <br>
-    <label>Upload Image:</label>
-    <input type="file" name="imageUrl" required/>
-    <br>
-    <label>Description:</label>
-    <textarea name="description" rows="3" cols="30"><%= gallery.description || '' %></textarea>
-    <br>
-    <button type="submit"><%= buttonText %></button>
+    <div class="form-group">
+      <label>Title:</label>
+      <input type="text" name="title" value="<%= gallery.title || '' %>" required/>
+    </div>
+    <div class="form-group">
+      <label>Upload Image:</label>
+      <input type="file" name="imageUrl" <%= !gallery.imageUrl ? 'required' : '' %>/>
+    </div>
+    <div class="form-group">
+      <label>Description:</label>
+      <textarea name="description" rows="3"><%= gallery.description || '' %></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary"><%= buttonText %></button>
   </form>
-</body>
-</html>
+</div>
+<%- include('../partials/footer') %>

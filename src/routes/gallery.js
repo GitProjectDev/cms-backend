@@ -1,3 +1,4 @@
+// routes/galleryRoutes.js
 const express = require('express');
 const router = express.Router();
 const authMiddleware = require('../middleware/auth');
@@ -8,7 +9,8 @@ const {
   createGallery,
   getEditGalleryForm,
   updateGallery,
-  deleteGallery
+  deleteGallery,
+  getGalleryById
 } = require('../controllers/galleryController');
 
 router.get('/', authMiddleware, getAllGalleries);
@@ -17,5 +19,6 @@ router.post('/new', authMiddleware, upload.single('imageUrl'), createGallery);
 router.get('/edit/:id', authMiddleware, getEditGalleryForm);
 router.post('/edit/:id', authMiddleware, upload.single('imageUrl'), updateGallery);
 router.post('/delete/:id', authMiddleware, deleteGallery);
+router.get('/view/:id', authMiddleware, getGalleryById); 
 
 module.exports = router;
