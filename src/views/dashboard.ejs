@@ -1,4 +1,99 @@
 <%- include('partials/header', { title: 'Dashboard' }) %>
-<h2>Welcome, <%= user.name %>!</h2>
-<p>Manage your content using the links in the navigation menu.</p>
+
+<div class="container dashboard-container">
+  <!-- Flash Messages -->
+  <% if (success && success.length > 0) { %>
+    <div class="alert alert-success">
+      <%= success[0] %>
+    </div>
+  <% } %>
+  <% if (error && error.length > 0) { %>
+    <div class="alert alert-danger">
+      <%= error[0] %>
+    </div>
+  <% } %>
+
+  <h2 class="dashboard-welcome">Welcome, <%= user.name %> 👋</h2>
+
+  <!-- Summary Cards -->
+  <div class="dashboard-summary">
+    <div class="summary-card">
+      <h5 class="card-title">Articles</h5>
+      <p class="card-text"><%= articlesCount %></p>
+      <a href="/articles" class="btn btn-primary btn-sm">Manage Articles</a>
+    </div>
+    <div class="summary-card">
+      <h5 class="card-title">Blogs</h5>
+      <p class="card-text"><%= blogsCount %></p>
+      <a href="/blogs" class="btn btn-custom-blog btn-sm">Manage Blogs</a>
+    </div>
+    <div class="summary-card">
+      <h5 class="card-title">Galleries</h5>
+      <p class="card-text"><%= galleriesCount %></p>
+      <a href="/galleries" class="btn btn-custom-gallery btn-sm">Manage Gallery</a>
+    </div>
+    <div class="summary-card">
+      <h5 class="card-title">Videos</h5>
+      <p class="card-text"><%= videosCount %></p>
+      <a href="/videos" class="btn btn-warning btn-sm">Manage Videos</a>
+    </div>
+  </div>
+
+  <!-- Recent Content -->
+  <div class="dashboard-recent">
+    <!-- Recent Articles -->
+    <h4>Recent Articles</h4>
+    <div class="recent-group">
+      <div class="recent-card">
+        <ul class="recent-list">
+          <% recentArticles.slice(0, 2).forEach(article => { %>
+            <li>
+              <span><%= article.title %></span>
+              <a href="/articles/<%= article._id %>" class="btn btn-outline-secondary btn-sm">View</a>
+            </li>
+          <% }) %>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Recent Blogs -->
+    <h4>Recent Blogs</h4>
+    <div class="recent-group">
+      <div class="recent-card">
+        <ul class="recent-list">
+          <% recentBlogs.slice(0, 2).forEach(blog => { %>
+            <li>
+              <span><%= blog.title %></span>
+              <a href="/blogs/<%= blog._id %>" class="btn btn-outline-secondary btn-sm">View</a>
+            </li>
+          <% }) %>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Recent Gallery -->
+    <h4>Recent Gallery</h4>
+    <div class="recent-group dashboard-gallery">
+      <% recentGalleries.slice(0, 2).forEach(gallery => { %>
+        <img src="<%= gallery.imageUrl %>" alt="<%= gallery.title %>">
+      <% }) %>
+    </div>
+
+    <!-- Recent Videos -->
+    <h4>Recent Videos</h4>
+    <div class="recent-group">
+      <div class="recent-card">
+        <ul class="recent-list">
+          <% recentVideos.slice(0, 2).forEach(video => { %>
+            <li>
+              <span><%= video.title %></span>
+              <a href="/videos/<%= video._id %>" class="btn btn-outline-secondary btn-sm">Watch</a>
+            </li>
+          <% }) %>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
 <%- include('partials/footer') %>

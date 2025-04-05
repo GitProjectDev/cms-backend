@@ -365,3 +365,175 @@ nav ul {
   color: #fff;
 }
  
+
+/* ============================================
+   Dashboard Specific Styles
+============================================ */
+
+/* Container for Dashboard */
+.dashboard-container {
+  padding: 2rem 0;
+}
+
+/* Welcome Header */
+.dashboard-welcome {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #007bff;
+  text-align: center;
+  margin-bottom: 2rem;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Summary Cards Section */
+.dashboard-summary {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.dashboard-summary .summary-card {
+  flex: 1 1 calc(25% - 1.5rem);
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.5rem 1rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  text-align: center;
+}
+
+.dashboard-summary .summary-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+}
+
+.dashboard-summary .summary-card .card-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.dashboard-summary .summary-card .card-text {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: #555;
+}
+
+.dashboard-summary .summary-card a.btn {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: 500;
+}
+
+/* Recent Content Section */
+.dashboard-recent {
+  margin-top: 3rem;
+}
+
+.dashboard-recent h4 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #007bff;
+  padding-bottom: 0.5rem;
+  color: #333;
+}
+
+/* Flex container for recent groups */
+.dashboard-recent .recent-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+/* Recent List Cards */
+.dashboard-recent .recent-card {
+  background: #fff;
+  border: 1px solid #eaeaea;
+  border-radius: 10px;
+  padding: 1rem;
+  flex: 1 1 calc(50% - 1.5rem);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+  transition: background 0.3s ease;
+}
+
+.dashboard-recent .recent-card:hover {
+  background: #f9f9f9;
+}
+
+.dashboard-recent .recent-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.dashboard-recent .recent-list li {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #eaeaea;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background 0.3s ease;
+}
+
+.dashboard-recent .recent-list li:last-child {
+  border-bottom: none;
+}
+
+.dashboard-recent .recent-list li:hover {
+  background: #f1f8ff;
+}
+
+/* Gallery Preview in Recent Section */
+.dashboard-gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.dashboard-gallery img {
+  flex: 1 1 calc(50% - 1rem);
+  border-radius: 10px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.dashboard-gallery img:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Custom button styling for Blogs and Galleries in the dashboard */
+.btn-custom-blog {
+  background: linear-gradient(135deg, #28a745, #218838);
+  color: #fff;
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.btn-custom-blog:hover {
+  background: linear-gradient(135deg, #218838, #1e7e34);
+  transform: translateY(-2px);
+}
+
+.btn-custom-gallery {
+  background: linear-gradient(135deg, #17a2b8, #138496);
+  color: #fff;
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.btn-custom-gallery:hover {
+  background: linear-gradient(135deg, #138496, #117a8b);
+  transform: translateY(-2px);
+}
+
+/* Adjust existing summary card button styling if needed */
+.dashboard-summary .summary-card a.btn {
+  font-weight: 500;
+  margin-top: 0.75rem;
+}

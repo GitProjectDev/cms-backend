@@ -12,6 +12,7 @@ const blogRoutes = require('./src/routes/blog');
 const videoRoutes = require('./src/routes/video');
 const articleRoutes = require('./src/routes/article');
 const galleryRoutes = require('./src/routes/gallery');
+const dashboardRoutes = require('./src/routes/dashboard'); // NEW
 
 const app = express();
 
@@ -47,7 +48,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// Pass flash messages and user data to all views
+// Pass flash messages and user data to all views (available as locals)
 app.use((req, res, next) => {
   res.locals.success = req.flash('success');
   res.locals.error = req.flash('error');
@@ -61,15 +62,7 @@ app.use('/blogs', blogRoutes);
 app.use('/videos', videoRoutes);
 app.use('/articles', articleRoutes);
 app.use('/galleries', galleryRoutes);
-
-// Dashboard route
-app.get('/dashboard', (req, res) => {
-  if (!req.session.user) {
-    req.flash('error', 'Please log in first');
-    return res.redirect('/auth/login');
-  }
-  res.render('dashboard', { user: req.session.user });
-});
+app.use('/dashboard', dashboardRoutes); // NEW
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server is running on http://localhost:${PORT}`));
