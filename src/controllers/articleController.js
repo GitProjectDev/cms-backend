@@ -75,6 +75,34 @@ const deleteArticle = async (req, res) => {
   }
 };
 
+
+// Public API - Get All Articles
+const apiGetAllArticles = async (req, res) => {
+  try {
+    const articles = await Article.find().sort({ createdAt: -1 }).select('title content createdAt');
+    res.json({ success: true, articles });
+  } catch (error) {
+    console.error('API Get All Articles Error:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch articles' });
+  }
+};
+
+// Public API - Get Single Article by ID
+const apiGetArticleById = async (req, res) => {
+  try {
+    const article = await Article.findById(req.params.id).select('title content createdAt');
+    if (!article) {
+      return res.status(404).json({ success: false, message: 'Article not found' });
+    }
+    res.json({ success: true, article });
+  } catch (error) {
+    console.error('API Get Article By ID Error:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch article' });
+  }
+};
+
+
+
 module.exports = { 
   getAllArticles, 
   getNewArticleForm, 
@@ -82,5 +110,7 @@ module.exports = {
   getEditArticleForm, 
   updateArticle, 
   deleteArticle, 
-  getSingleArticle 
+  getSingleArticle,
+  apiGetAllArticles,
+  apiGetArticleById
 };

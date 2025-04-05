@@ -14,6 +14,7 @@ const videoRoutes = require('./src/routes/video');
 const articleRoutes = require('./src/routes/article');
 const galleryRoutes = require('./src/routes/gallery');
 const dashboardRoutes = require('./src/routes/dashboard');
+const apiRoutes = require('./src/routes/publicRoutes'); 
 
 const app = express();
 connectDb();
@@ -51,7 +52,7 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: process.env.NODE_ENV === 'production', // Ensure it is secure only in production (HTTPS required)
+    secure: process.env.NODE_ENV === 'production', //  {{{{{Ensure it is secure only in production (HTTPS required)}}}}}
     httpOnly: true, // Prevent access to cookies by JavaScript
     sameSite: 'strict', // Prevent cross-site cookie sending
     maxAge: 60 * 60 * 1000 // Session expiration time (1 hour)
@@ -62,13 +63,13 @@ app.use(session({
   })
 }));
 
-// Flash messages setup (for temporary messages like success/error)
+// (for temporary messages like success/error)
 app.use(flash());
 
 // Middleware to map session user to req.user
 app.use((req, res, next) => {
   if (req.session.user) {
-    req.user = req.session.user;  // Attach user object to req
+    req.user = req.session.user;  
   }
   next();
 });
@@ -88,6 +89,7 @@ app.use('/videos', videoRoutes);
 app.use('/articles', articleRoutes);
 app.use('/galleries', galleryRoutes);
 app.use('/dashboard', dashboardRoutes);
+app.use('/api', apiRoutes); 
 
 // Generic Error Handling (catch-all)
 app.use((req, res, next) => {

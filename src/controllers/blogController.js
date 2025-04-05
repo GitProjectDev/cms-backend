@@ -134,3 +134,35 @@ exports.getEditBlogForm = async (req, res) => {
     res.redirect('/blogs');
   }
 };
+
+// Get All Blogs - Public API
+exports.apiGetAllBlogs = async (req, res) => {
+  try {
+    const blogs = await Blog.find()
+      .populate('author', 'name email') // only send safe public info
+      .select('title description image author createdAt');
+
+    res.json({ success: true, blogs });
+  } catch (error) {
+    console.error('API Get All Blogs Error:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch blogs' });
+  }
+};
+
+// Get Blog by ID - Public API
+exports.apiGetBlogById = async (req, res) => {
+  try {
+    const blog = await Blog.findById(req.params.id)
+      .populate('author', 'name email')
+      .select('title description image author createdAt');
+
+    if (!blog) {
+      return res.status(404).json({ success: false, message: 'Blog not found' });
+    }
+
+    res.json({ success: true, blog });
+  } catch (error) {
+    console.error('API Get Blog By ID Error:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch blog' });
+  }
+};

@@ -1,4 +1,5 @@
 const Video = require('../models/video');
+const { apiGetAllArticles } = require('./articleController');
 
 const getAllVideos = async (req, res) => {
   try {
@@ -75,6 +76,33 @@ const deleteVideo = async (req, res) => {
   }
 };
 
+
+// Public API - Get All Videos
+const apiGetAllVideos = async (req, res) => {
+  try {
+    const videos = await Video.find().sort({ createdAt: -1 }).select('title videoUrl description createdAt');
+    res.json({ success: true, videos });
+  } catch (error) {
+    console.error('API Get All Videos Error:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch videos' });
+  }
+};
+
+// Public API - Get Single Video by ID
+const apiGetVideoById = async (req, res) => {
+  try {
+    const video = await Video.findById(req.params.id).select('title videoUrl description createdAt');
+    if (!video) {
+      return res.status(404).json({ success: false, message: 'Video not found' });
+    }
+    res.json({ success: true, video });
+  } catch (error) {
+    console.error('API Get Video By ID Error:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch video' });
+  }
+};
+
+
 module.exports = {
   getAllVideos,
   getNewVideoForm,
@@ -82,5 +110,7 @@ module.exports = {
   getEditVideoForm,
   updateVideo,
   deleteVideo,
-  getSingleVideo
+  getSingleVideo,
+  apiGetAllVideos,
+  apiGetVideoById
 };

@@ -132,6 +132,33 @@ const deleteGallery = async (req, res) => {
   }
 };
 
+
+// Public API - Get All Galleries
+const apiGetAllGalleries = async (req, res) => {
+  try {
+    const galleries = await Gallery.find().sort({ createdAt: -1 }).select('title imageUrl description createdAt');
+    res.json({ success: true, galleries });
+  } catch (error) {
+    console.error('API Get All Galleries Error:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch galleries' });
+  }
+};
+
+// Public API - Get Gallery by ID
+const apiGetGalleryById = async (req, res) => {
+  try {
+    const gallery = await Gallery.findById(req.params.id).select('title imageUrl description createdAt');
+    if (!gallery) {
+      return res.status(404).json({ success: false, message: 'Gallery not found' });
+    }
+    res.json({ success: true, gallery });
+  } catch (error) {
+    console.error('API Get Gallery By ID Error:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch gallery' });
+  }
+};
+
+
 module.exports = {
   getAllGalleries,
   getNewGalleryForm,
@@ -139,5 +166,7 @@ module.exports = {
   getEditGalleryForm,
   updateGallery,
   deleteGallery,
-  getGalleryById
+  getGalleryById,
+  apiGetAllGalleries,
+  apiGetGalleryById
 };
