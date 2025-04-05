@@ -1,37 +1,49 @@
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
+
+// Create uploads directory if it doesn't exist
+const uploadDir = path.join(__dirname, '..', 'uploads');
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
 
 // Configure multer storage
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'src/uploads/'); // Destination folder for uploads
-    },
-    filename: (req, file, cb) => {
-        const suffix = Date.now();
-        cb(null, `${suffix}-${file.originalname}`); // Unique file naming
-    },
+  destination: (req, file, cb) => {
+    cb(null, uploadDir); // Use absolute path
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const ext = path.extname(file.originalname).toLowerCase();
+    cb(null, `${uniqueSuffix}${ext}`); // Preserve original extension
+  },
 });
 
-// File filter for security (only allow images)
+// File filter for security
 const fileFilter = (req, file, cb) => {
-    const allowedFileTypes = /jpeg|jpg|png/;
-    const mimeType = allowedFileTypes.test(file.mimetype);
-    const extName = allowedFileTypes.test(path.extname(file.originalname).toLowerCase());
+  const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+  const allowedExtensions = ['.jpeg', '.jpg', '.png'];
+  
+  const isValidMimeType = allowedMimeTypes.includes(file.mimetype);
+  const ext = path.extname(file.originalname).toLowerCase();
+  const isValidExtension = allowedExtensions.includes(ext);
 
-    if (mimeType && extName) {
-        cb(null, true);
-    } else {
-        cb(new Error('Only .jpeg, .jpg, or .png files are allowed!'), false);
-    }
+  if (isValidMimeType && isValidExtension) {
+    cb(null, true);
+  } else {
+    cb(new Error('Invalid file type. Only JPEG/JPG/PNG images are allowed!'), false);
+  }
 };
 
 // Multer upload middleware
 const upload = multer({
-    storage,
-    limits: {
-        fileSize: 5 * 1024 * 1024, // Limit file size to 5 MB
-    },
-    fileFilter,
+  storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB limit
+    files: 1 // Allow only single file upload
+  },
+  fileFilter,
 });
 
 module.exports = upload;

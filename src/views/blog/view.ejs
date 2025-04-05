@@ -1,5 +1,7 @@
 <%- include('../partials/header', { title: blog.title }) %>
 
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+
 <div class="container blog-container">
   <article class="blog-article">
     <header class="blog-header">
@@ -9,7 +11,7 @@
           <span class="author">By <%= blog.author.username %></span>
         <% } %>
         <time class="publish-date">
-          <%= new Date(blog.createdAt).toLocaleDateString('en-US', { 
+          <%= blog.createdAt.toLocaleDateString('en-US', { 
             year: 'numeric', 
             month: 'long', 
             day: 'numeric' 
@@ -19,9 +21,9 @@
     </header>
 
     <% if (blog.image) { %>
-      <figure class="blog-image">
-        <img src="<%= blog.image %>" alt="<%= blog.title %>" class="img-responsive">
-        <figcaption class="image-caption">Featured Image</figcaption>
+      <figure class="blog-image text-center">
+        <img src="<%= blog.image %>" alt="<%= blog.title %>" 
+             class="img-fluid rounded shadow">
       </figure>
     <% } %>
 
@@ -29,18 +31,20 @@
       <%- blog.description %>
     </section>
 
-    <footer class="blog-actions">
-      <a href="/blogs/<%= blog._id %>/edit" class="btn btn-edit">
-        <i class="fas fa-edit"></i> Edit
-      </a>
-      <form action="/blogs/<%= blog._id %>?_method=DELETE" method="POST" class="d-inline">
-        <button type="submit" class="btn btn-delete" 
-                onclick="return confirm('Permanently delete this blog?')">
-          <i class="fas fa-trash"></i> Delete
-        </button>
-      </form>
-      <a href="/blogs" class="btn btn-back">
-        <i class="fas fa-arrow-left"></i> Back to Blogs
+    <footer class="blog-actions mt-4">
+      <div class="action-group">
+        <a href="/blogs/<%= blog._id %>/edit" class="btn btn-warning">
+          <i class="fas fa-edit"></i> Edit
+        </a>
+        <form action="/blogs/<%= blog._id %>?_method=DELETE" method="POST" class="d-inline">
+          <button type="submit" class="btn btn-danger" 
+                  onclick="return confirm('Permanently delete this post?')">
+            <i class="fas fa-trash"></i> Delete
+          </button>
+        </form>
+      </div>
+      <a href="/blogs" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> All Posts
       </a>
     </footer>
   </article>

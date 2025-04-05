@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const User = require('../models/User');
+const nodemailer = require('nodemailer');
 
 const registerUser = async (req, res) => {
     try {
@@ -37,33 +38,35 @@ const registerUser = async (req, res) => {
     }
 };
 
+//login 
 const loginUser = async (req, res) => {
-    try {
-        const { email, password } = req.body;
+  const { email, password } = req.body;
+  const user = await User.findOne({ email });
+  if (!user) {
+    req.flash('error', 'Invalid email or password');
+    return res.redirect('/auth/login');
+  }
 
-        // Check if user exists
-        const user = await User.findOne({ email });
-        if (!user) {
-            req.flash('error', 'No user found with this email');
-            return res.redirect('/auth/login');
-        }
+  const match = await bcrypt.compare(password, user.password);
+  if (!match) {
+    req.flash('error', 'Invalid email or password');
+    return res.redirect('/auth/login');
+  }
 
-        // Verify password
-        const isPasswordMatch = await bcrypt.compare(password, user.password);
-        if (!isPasswordMatch) {
-            req.flash('error', 'Invalid password');
-            return res.redirect('/auth/login');
-        }
-
-        // Set user in session
-        req.session.user = { id: user._id, name: user.name, role: user.role };
-        req.flash('success', 'Login successful');
-        return res.redirect('/dashboard');
-    } catch (error) {
-        console.error(error);
-        req.flash('error', 'Server error, try again later');
-        return res.redirect('/auth/login');
+  req.session.regenerate((err) => {
+    if (err) {
+      req.flash('error', 'Session error');
+      return res.redirect('/auth/login');
     }
+
+    // Set the user session here
+    req.session.user = { id: user._id, name: user.name, role: user.role }; 
+    req.session.ip = req.ip;
+    req.session.userAgent = req.headers['user-agent'];
+
+    req.flash('success', 'Logged in successfully');
+    res.redirect('/dashboard');
+  });
 };
 
 const changePassword = async (req, res) => {
@@ -101,5 +104,86 @@ const changePassword = async (req, res) => {
         return res.redirect('/auth/change-password');
     }
 };
+ 
+// for Reset and forgot password 
 
-module.exports = { registerUser, loginUser, changePassword };
+// Generate OTP
+const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString();
+
+// Gmail transporter
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_PASS,
+  }
+});
+
+// Forgot Password
+const forgotPassword = async (req, res) => {
+  const { email } = req.body;
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    req.flash('error', 'No user found with this email');
+    return res.redirect('/auth/forgot-password');
+  }
+
+  const otp = generateOTP();
+  const expiry = new Date(Date.now() + 5 * 60 * 1000); // 5 mins later
+
+  user.resetOTP = otp;
+  user.otpExpires = expiry;
+  await user.save();
+
+  const mailOptions = {
+    from: process.env.GMAIL_USER,
+    to: email,
+    subject: 'Password Reset OTP',
+    html: `<p>Your OTP is: <b>${otp}</b></p><p>Valid for 5 minutes only.</p>`
+  };
+
+  await transporter.sendMail(mailOptions);
+  req.flash('success', 'OTP sent to your email');
+  res.redirect(`/auth/reset-password?email=${email}`);
+};
+
+// Reset Password
+const resetPassword = async (req, res) => {
+  const { email, otp, newPassword } = req.body;
+
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    req.flash('error', 'No user found');
+    return res.redirect(`/auth/reset-password?email=${email}`);
+  }
+
+  const now = new Date();
+
+  if (!user.resetOTP || !user.otpExpires || user.resetOTP !== otp || user.otpExpires < now) {
+    req.flash('error', 'Invalid or expired OTP');
+    return res.redirect(`/auth/reset-password?email=${email}`);
+  }
+
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+  user.password = hashedPassword;
+  user.resetOTP = null;
+  user.otpExpires = null;
+  await user.save();
+
+  req.flash('success', 'Password reset successful');
+  res.redirect('/auth/login');
+
+};
+
+module.exports = {
+  registerUser,
+  loginUser,
+  changePassword,
+  forgotPassword,
+  resetPassword
+};
+
+
+module.exports = { registerUser, loginUser, changePassword,forgotPassword,resetPassword };
