@@ -70,8 +70,11 @@ exports.updateBlog = async (req, res) => {
 
     if (req.file) {
       if (blog.image) {
-        const oldImage = blog.image.split('/').pop();
-        await fs.unlink(path.join(uploadDir, oldImage));
+        const oldImage = path.basename(blog.image);
+        const oldImagePath = path.join(uploadDir, oldImage);
+        await fs.unlink(oldImagePath).catch(err => {
+          console.error('Error deleting old image:', err);
+        });
       }
       blog.image = `/uploads/${req.file.filename}`;
     }
@@ -85,12 +88,16 @@ exports.updateBlog = async (req, res) => {
   } catch (error) {
     console.error('Update Error:', error);
     if (req.file) {
-      await fs.unlink(path.join(uploadDir, req.file.filename));
+      const newImagePath = path.join(uploadDir, req.file.filename);
+      await fs.unlink(newImagePath).catch(err => {
+        console.error('Error cleaning up new image:', err);
+      });
     }
     req.flash('error', 'Failed to update blog');
     res.redirect(`/blogs/${req.params.id}/edit`);
   }
 };
+
 
 // Delete Blog
 exports.deleteBlog = async (req, res) => {
@@ -102,8 +109,11 @@ exports.deleteBlog = async (req, res) => {
     }
 
     if (blog.image) {
-      const filename = blog.image.split('/').pop();
-      await fs.unlink(path.join(uploadDir, filename));
+      const filename = path.basename(blog.image);
+      const filePath = path.join(uploadDir, filename);
+      await fs.unlink(filePath).catch(err => {
+        console.error('Error deleting image:', err);
+      });
     }
 
     req.flash('success', 'Blog deleted successfully');
@@ -114,6 +124,7 @@ exports.deleteBlog = async (req, res) => {
     res.redirect('/blogs');
   }
 };
+
 
 // Form Rendering
 exports.getNewBlogForm = (req, res) => {

@@ -1,6 +1,7 @@
 const fs = require('fs').promises;
 const path = require('path');
 const Gallery = require('../models/Gallery');
+const uploadDir = path.join(__dirname, '../uploads');
 
 const getAllGalleries = async (req, res) => {
   try {
@@ -11,6 +12,7 @@ const getAllGalleries = async (req, res) => {
     res.redirect('/dashboard');
   }
 };
+
 const getGalleryById = async (req, res) => {
   try {
     const gallery = await Gallery.findById(req.params.id);
@@ -33,7 +35,6 @@ const getNewGalleryForm = (req, res) => {
   });
 };
 
-
 const createGallery = async (req, res) => {
   try {
     if (!req.file) {
@@ -49,8 +50,10 @@ const createGallery = async (req, res) => {
     req.flash('success', 'Gallery image added successfully');
     res.redirect('/galleries/');
   } catch (error) {
+    // If there is an error and a file was uploaded, try to delete it
     if (req.file) {
-      await fs.unlink(path.join(__dirname, '../src/uploads', req.file.filename));
+      const filePath = path.join(uploadDir, req.file.filename);
+      await fs.unlink(filePath).catch(err => console.error('Error deleting file:', err));
     }
     req.flash('error', 'Error adding gallery image');
     res.redirect('/galleries/new');
@@ -86,25 +89,31 @@ const updateGallery = async (req, res) => {
     let newImage = gallery.imageUrl;
     if (req.file) {
       newImage = `/uploads/${req.file.filename}`;
-      // Delete old image
+      // Delete the old image if one exists
       if (gallery.imageUrl) {
-        const oldPath = path.join(__dirname, '../src', gallery.imageUrl);
-        await fs.unlink(oldPath).catch(err => console.error('Error deleting old image:', err));
+        const oldImage = path.basename(gallery.imageUrl);
+        const oldImagePath = path.join(uploadDir, oldImage);
+        await fs.unlink(oldImagePath).catch(err => {
+          console.error('Error deleting old gallery image:', err);
+        });
       }
     }
 
-    await Gallery.findByIdAndUpdate(req.params.id, {
-      title: req.body.title,
-      imageUrl: newImage,
-      description: req.body.description || ''
-    });
+    gallery.title = req.body.title;
+    gallery.description = req.body.description || '';
+    gallery.imageUrl = newImage;
+    await gallery.save();
 
     req.flash('success', 'Gallery image updated successfully');
     res.redirect('/galleries/');
   } catch (error) {
+    console.error('Update Error:', error);
+    // If a new image was uploaded but an error occurs, remove the uploaded file
     if (req.file) {
-      await fs.unlink(path.join(__dirname, '../src/uploads', req.file.filename))
-        .catch(err => console.error('Error cleaning up new image:', err));
+      const newImagePath = path.join(uploadDir, req.file.filename);
+      await fs.unlink(newImagePath).catch(err => {
+        console.error('Error cleaning up new gallery image:', err);
+      });
     }
     req.flash('error', 'Error updating gallery image');
     res.redirect(`/galleries/edit/${req.params.id}`);
@@ -120,18 +129,21 @@ const deleteGallery = async (req, res) => {
     }
 
     if (gallery.imageUrl) {
-      const imagePath = path.join(__dirname, '../src', gallery.imageUrl);
-      await fs.unlink(imagePath);
+      const filename = path.basename(gallery.imageUrl);
+      const imagePath = path.join(uploadDir, filename);
+      await fs.unlink(imagePath).catch(err => {
+        console.error('Error deleting gallery image:', err);
+      });
     }
 
     req.flash('success', 'Gallery image deleted successfully');
     res.redirect('/galleries/');
   } catch (error) {
+    console.error('Delete Error:', error);
     req.flash('error', 'Error deleting gallery image');
     res.redirect('/galleries/');
   }
 };
-
 
 // Public API - Get All Galleries
 const apiGetAllGalleries = async (req, res) => {
@@ -157,7 +169,6 @@ const apiGetGalleryById = async (req, res) => {
     res.status(500).json({ success: false, message: 'Failed to fetch gallery' });
   }
 };
-
 
 module.exports = {
   getAllGalleries,
