@@ -24,7 +24,12 @@ body {
 /* ============================================
    Typography & Headings
 ============================================ */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   color: #222;
   margin-bottom: 1rem;
   font-weight: 600;
@@ -105,11 +110,11 @@ nav ul li a:hover {
     align-items: center;
     display: none;
   }
-  
+
   nav ul.show {
     display: flex;
   }
-  
+
   nav ul li {
     margin: 0.5rem 0;
   }
@@ -364,7 +369,6 @@ nav ul {
 .btn-danger i {
   color: #fff;
 }
- 
 
 /* ============================================
    Dashboard Specific Styles

@@ -1,6 +1,6 @@
 <%- include('../partials/header', { title: blog.title }) %>
 
-<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet" />
 
 <div class="container blog-container">
   <article class="blog-article">
@@ -8,37 +8,43 @@
       <h1 class="blog-title"><%= blog.title %></h1>
       <div class="blog-meta">
         <% if (blog.author) { %>
-          <span class="author">By <%= blog.author.username %></span>
+        <!-- <span class="author">By <%= blog.author.username %></span> -->
+        <span class="author">By: Tilak Raj Bhandari</span><br />
         <% } %>
         <time class="publish-date">
-          <%= blog.createdAt.toLocaleDateString('en-US', { 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric' 
-          }) %>
+          <%= blog.createdAt.toLocaleDateString('en-US', { year: 'numeric',
+          month: 'long', day: 'numeric' }) %>
         </time>
       </div>
     </header>
 
     <% if (blog.image) { %>
-      <figure class="blog-image text-center">
-        <img src="<%= blog.image %>" alt="<%= blog.title %>" 
-             class="img-fluid rounded shadow">
-      </figure>
+    <figure class="blog-image text-center">
+      <img
+        src="<%= blog.image %>"
+        alt="<%= blog.title %>"
+        class="img-fluid rounded shadow"
+      />
+    </figure>
     <% } %>
 
-    <section class="blog-content ql-editor">
-      <%- blog.description %>
-    </section>
+    <section class="blog-content ql-editor"><%- blog.description %></section>
 
     <footer class="blog-actions mt-4">
       <div class="action-group">
         <a href="/blogs/<%= blog._id %>/edit" class="btn btn-warning">
           <i class="fas fa-edit"></i> Edit
         </a>
-        <form action="/blogs/<%= blog._id %>?_method=DELETE" method="POST" class="d-inline">
-          <button type="submit" class="btn btn-danger" 
-                  onclick="return confirm('Permanently delete this post?')">
+        <form
+          action="/blogs/<%= blog._id %>?_method=DELETE"
+          method="POST"
+          class="d-inline"
+        >
+          <button
+            type="submit"
+            class="btn btn-danger"
+            onclick="return confirm('Permanently delete this post?')"
+          >
             <i class="fas fa-trash"></i> Delete
           </button>
         </form>
