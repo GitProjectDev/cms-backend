@@ -1,6 +1,35 @@
 const Video = require('../models/video');
 const { apiGetAllArticles } = require('./articleController');
 
+// Helper to generate an embeddable URL from a video link
+function getEmbedUrl(url) {
+  try {
+    let embedUrl = url;
+    // Check for standard YouTube URL
+    if (url.includes('youtube.com/watch?v=')) {
+      const urlObj = new URL(url);
+      const videoId = urlObj.searchParams.get('v');
+      if (videoId) {
+        embedUrl = `https://www.youtube.com/embed/${videoId}`;
+      }
+    }
+    // Check for shortened YouTube URL
+    else if (url.includes('youtu.be/')) {
+      const parts = url.split('/');
+      const videoId = parts.pop();
+      if (videoId) {
+        embedUrl = `https://www.youtube.com/embed/${videoId}`;
+      }
+    }
+    return embedUrl;
+  } catch (err) {
+    // If parsing fails, just return the original URL
+    return url;
+  }
+}
+
+// Rendered (admin) endpoints
+
 const getAllVideos = async (req, res) => {
   try {
     const videos = await Video.find().sort({ createdAt: -1 });
@@ -76,34 +105,66 @@ const deleteVideo = async (req, res) => {
   }
 };
 
-
-// Public API - Get All Videos
+// Public API – Get All Videos (with embed URL)
 const apiGetAllVideos = async (req, res) => {
   try {
-    const videos = await Video.find().sort({ createdAt: -1 }).select('title videoUrl description createdAt');
-    res.json({ success: true, videos });
+    const videos = await Video.find().sort({ createdAt: -1 });
+    const videosWithEmbed = videos.map(video => ({
+      _id: video._id,
+      title: video.title,
+      url: video.url,
+      embedUrl: getEmbedUrl(video.url),  // New field for easy embedding
+      description: video.description,
+      createdAt: video.createdAt
+    }));
+    res.json({ success: true, videos: videosWithEmbed });
   } catch (error) {
     console.error('API Get All Videos Error:', error);
     res.status(500).json({ success: false, message: 'Failed to fetch videos' });
   }
 };
 
-// Public API - Get Single Video by ID
+// Public API – Get Single Video by ID (with embed URL)
 const apiGetVideoById = async (req, res) => {
   try {
-    const video = await Video.findById(req.params.id).select('title videoUrl description createdAt');
+    const video = await Video.findById(req.params.id);
     if (!video) {
       return res.status(404).json({ success: false, message: 'Video not found' });
     }
-    res.json({ success: true, video });
+    res.json({
+      success: true,
+      video: {
+        _id: video._id,
+        title: video.title,
+        url: video.url,
+        embedUrl: getEmbedUrl(video.url),  // Included in the response
+        description: video.description,
+        createdAt: video.createdAt
+      }
+    });
   } catch (error) {
     console.error('API Get Video By ID Error:', error);
     res.status(500).json({ success: false, message: 'Failed to fetch video' });
   }
 };
 
+// New Public API – Get Embed Video (returns just the embed URL)
+const apiEmbedVideo = async (req, res) => {
+  try {
+    const video = await Video.findById(req.params.id);
+    if (!video) {
+      return res.status(404).json({ success: false, message: 'Video not found' });
+    }
+    const embedUrl = getEmbedUrl(video.url);
+    res.json({ success: true, embedUrl });
+  } catch (error) {
+    console.error('API Embed Video Error:', error);
+    res.status(500).json({ success: false, message: 'Failed to generate embed video URL' });
+  }
+};
 
 module.exports = {
+  // Admin routes
   getAllVideos,
   getNewVideoForm,
   createVideo,
@@ -111,6 +172,8 @@ module.exports = {
   updateVideo,
   deleteVideo,
   getSingleVideo,
+  // Public API
   apiGetAllVideos,
-  apiGetVideoById
+  apiGetVideoById,
+  apiEmbedVideo
 };
